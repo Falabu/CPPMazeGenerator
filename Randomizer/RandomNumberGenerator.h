@@ -19,15 +19,7 @@ public:
 private:
     std::string seedString;
 
-    std::vector<unsigned int> numbers;
-
-    int randomNumberCount{1000};
-
     int seedLength{25};
-
-    int currentNumberIndex{0};
-
-    void generateNumbers();
 
     unsigned int generateSeed();
 

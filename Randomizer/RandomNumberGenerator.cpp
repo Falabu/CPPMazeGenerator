@@ -3,8 +3,6 @@
 RandomNumberGenerator::RandomNumberGenerator() {
     unsigned int seedTemp = generateSeed();
     std::srand(seedTemp);
-
-    generateNumbers();
 }
 
 RandomNumberGenerator::RandomNumberGenerator(const std::string &seedString) : seedString(seedString) {
@@ -19,8 +17,6 @@ RandomNumberGenerator::RandomNumberGenerator(const std::string &seedString) : se
     unsigned int seed = generateSeed(initialSeed);
 
     std::srand(seed);
-
-    generateNumbers();
 }
 
 unsigned int RandomNumberGenerator::generateSeed() {
@@ -61,23 +57,8 @@ unsigned int RandomNumberGenerator::generateSeed(const std::vector<int> &vector)
     return newSeed;
 }
 
-void RandomNumberGenerator::generateNumbers() {
-    for (int i{0}; i < randomNumberCount; ++i) {
-        numbers.push_back(std::rand());
-    }
-}
-
 unsigned long int RandomNumberGenerator::operator()() {
-    size_t numbersQty = numbers.size();
-    if (currentNumberIndex >= numbersQty) {
-        currentNumberIndex = 0;
-    }
-
-    long int selected{numbers[currentNumberIndex]};
-
-    currentNumberIndex++;
-
-    return selected;
+    return std::rand();
 }
 
 std::string RandomNumberGenerator::seedToString() {
