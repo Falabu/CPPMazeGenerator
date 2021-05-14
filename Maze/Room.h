@@ -33,6 +33,8 @@ public:
 
     void addPossibleEntrance(const Point &point, const Point &direction, int length);
 
+    void addPossibleEntrance(std::vector<RoomEntrance> entrances);
+
     std::vector<RoomEntrance> getPossibleEntrance();
 
     std::vector<Point> getBoundaries() const;

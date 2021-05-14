@@ -1,3 +1,4 @@
+#include <functional>
 #include "MazeGenerator.h"
 
 MazeGenerator::MazeGenerator(MazeDrawer &drawer, Randomizer &randomizer) : drawer(drawer), randomizer(randomizer) {
@@ -60,7 +61,7 @@ void MazeGenerator::generateRooms() {
         Room currentRoom{whereTo, currentWidth, currentHeight};
 
         if (mazePtr->inMazeBoundaries(currentRoom.getBoundaries()) && !roomIntersect(currentRoom)) {
-            addRoom(currentRoom);
+            generateRoom(currentRoom);
         }
     }
 }
@@ -70,7 +71,7 @@ bool MazeGenerator::roomIntersect(const Room &room) {
     return std::any_of(mazePtr->rooms.begin(), mazePtr->rooms.end(), [&](Room &r) { return rectOverlap(room, r); });
 }
 
-void MazeGenerator::addRoom(Room &room) {
+void MazeGenerator::generateRoom(Room &room) {
     for (int y{0}; y <= room.height; ++y) {
         for (int x{0}; x <= room.width; ++x) {
             Point newPoint = {room.coordinate.x + x, room.coordinate.y + y};
@@ -85,7 +86,7 @@ void MazeGenerator::addRoom(Room &room) {
 }
 
 /**
- * https://stackoverflow.com/topLeft/306379
+ * https://stackoverflow.com/a/306379
  */
 bool MazeGenerator::valueInRange(int value, int min, int max) {
     return (value >= min) && (value <= max);
@@ -109,80 +110,54 @@ std::string MazeGenerator::getSeed() {
     return randomizer.getSeed();
 }
 
-/**
- * TODO: Generalize?
- */
 void MazeGenerator::findPossibleEntrances() {
 
     for (auto &room : mazePtr->rooms) {
-        //TOP
-        for (int i{0}; i <= room.width; ++i) {
-            if (i > 0 && i < room.width) {
-                Point direction = Directions::NORTH;
-                Point startPoint{room.roomPoints.topLeft.x + i, room.roomPoints.topLeft.y};
 
-                Point toCheck = startPoint;
-                for (int length{1}; length < mazePtr->settings.baseDistance * 2; ++length) {
-                    toCheck = toCheck + direction;
-                    if (mazePtr->inMazeBoundaries(toCheck) && mazePtr->getMazePointRef(toCheck)->isInMaze()) {
-                        room.addPossibleEntrance(startPoint, Directions::NORTH, length);
-                        break;
-                    }
-                }
-            }
-        }
+        auto topEntrances = findRoomEntrances(room.width, Directions::NORTH, [&room](int i) {
+            return Point{room.roomPoints.topLeft.x + i, room.roomPoints.topLeft.y};
+        });
 
-        //BOTTOM
-        for (int i{0}; i <= room.width; ++i) {
-            if (i > 0 && i < room.width) {
-                Point direction = Directions::SOUTH;
-                Point startPoint{room.roomPoints.bottomLeft.x + i, room.roomPoints.bottomLeft.y};
+        auto bottomEntrances = findRoomEntrances(room.width, Directions::SOUTH, [&room](int i) {
+            return Point{room.roomPoints.bottomLeft.x + i, room.roomPoints.bottomLeft.y};
+        });
 
-                Point toCheck = startPoint;
-                for (int length{1}; length < mazePtr->settings.baseDistance * 2; ++length) {
-                    toCheck = toCheck + direction;
-                    if (mazePtr->inMazeBoundaries(toCheck) && mazePtr->getMazePointRef(toCheck)->isInMaze()) {
-                        room.addPossibleEntrance(startPoint, Directions::SOUTH, length);
-                        break;
-                    }
-                }
-            }
-        }
+        auto leftEntrances = findRoomEntrances(room.height, Directions::WEST, [&room](int i) {
+            return Point{room.roomPoints.topLeft.x, room.roomPoints.topLeft.y + i};
+        });
 
-        //LEFT
-        for (int i{0}; i <= room.height; ++i) {
-            if (i > 0 && i < room.height) {
-                Point direction = Directions::WEST;
-                Point startPoint{room.roomPoints.topLeft.x, room.roomPoints.topLeft.y + i};
+        auto rightEntrances = findRoomEntrances(room.height, Directions::EAST, [&room](int i) {
+            return Point{room.roomPoints.topRight.x, room.roomPoints.topRight.y + i};
+        });
 
-                Point toCheck = startPoint;
-                for (int length{1}; length < mazePtr->settings.baseDistance * 2; ++length) {
-                    toCheck = toCheck + direction;
-                    if (mazePtr->inMazeBoundaries(toCheck) && mazePtr->getMazePointRef(toCheck)->isInMaze()) {
-                        room.addPossibleEntrance(startPoint, Directions::WEST, length);
-                        break;
-                    }
-                }
-            }
-        }
+        room.addPossibleEntrance(topEntrances);
+        room.addPossibleEntrance(bottomEntrances);
+        room.addPossibleEntrance(rightEntrances);
+        room.addPossibleEntrance(leftEntrances);
+    }
+}
 
-        //RIGHT
-        for (int i{0}; i <= room.height; ++i) {
-            if (i > 0 && i < room.height) {
-                Point direction = Directions::EAST;
-                Point startPoint{room.roomPoints.topRight.x, room.roomPoints.topRight.y + i};
+template<typename T>
+std::vector<RoomEntrance> MazeGenerator::findRoomEntrances(int lengthIn, const Point &direction, T &&lambda) {
+    std::vector<RoomEntrance> entrances;
 
-                Point toCheck = startPoint;
-                for (int length{1}; length < mazePtr->settings.baseDistance * 2; ++length) {
-                    toCheck = toCheck + direction;
-                    if (mazePtr->inMazeBoundaries(toCheck) && mazePtr->getMazePointRef(toCheck)->isInMaze()) {
-                        room.addPossibleEntrance(startPoint, Directions::EAST, length);
-                        break;
-                    }
+    for (int i{0}; i <= lengthIn; ++i) {
+        if (i > 0 && i < lengthIn) {
+
+            Point startPoint = lambda(i);
+
+            Point toCheck = startPoint;
+            for (int length{1}; length < mazePtr->settings.baseDistance * 2; ++length) {
+                toCheck = toCheck + direction;
+                if (mazePtr->inMazeBoundaries(toCheck) && mazePtr->getMazePointRef(toCheck)->isInMaze()) {
+                    entrances.push_back({startPoint, direction, length});
+                    break;
                 }
             }
         }
     }
+
+    return entrances;
 }
 
 void MazeGenerator::drawRoomEntrances() {

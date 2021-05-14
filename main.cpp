@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
     myTypes::MazeSettings settings{w, h, g};
 
     NcursesDisplay display;
-    std::shared_ptr<Maze> mazePtr = std::make_shared<Maze>(settings);
+    auto mazePtr = std::make_shared<Maze>(settings);
     std::unique_ptr<MazeGenerator> mgPtr;
 
     if (argc >= 5) {

@@ -34,7 +34,7 @@ private:
 
     void generateRooms();
 
-    void addRoom(Room &room);
+    void generateRoom(Room &room);
 
     bool roomIntersect(const Room &room);
 
@@ -45,6 +45,9 @@ private:
     bool rectOverlap(const Room &A, const Room &B) const;
 
     void findPossibleEntrances();
+
+    template<typename T>
+    std::vector<RoomEntrance> findRoomEntrances(int lengthIn, const Point &direction, T &&lambda);
 
     void drawRoomEntrances();
 
