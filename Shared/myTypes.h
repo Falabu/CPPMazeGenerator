@@ -15,7 +15,7 @@ namespace myTypes {
     struct MazeSettings {
         int width{};
         int height{};
-        int gap{};
+        int baseDistance{};
 
         int roomMinDistance{3};
         int maxRooms{1000};

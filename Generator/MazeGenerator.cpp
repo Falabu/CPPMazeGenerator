@@ -11,13 +11,13 @@ void MazeGenerator::generateCorridors(const Point &from) {
         auto selectedDirection{directions.back()};
         directions.pop_back();
 
-        Point newPoint{from.x + selectedDirection.x * mazePtr->settings.gap,
-                       from.y + selectedDirection.y * mazePtr->settings.gap};
+        Point newPoint{from.x + selectedDirection.x * mazePtr->settings.baseDistance,
+                       from.y + selectedDirection.y * mazePtr->settings.baseDistance};
 
         if (mazePtr->inMazeBoundaries(newPoint)) {
             if (!mazePtr->mazePointVisited(newPoint) && !mazePtr->visitedInAnyDirection(newPoint)) {
 
-                bridgeTheGap(from, selectedDirection, mazePtr->settings.gap);
+                bridgeTheGap(from, selectedDirection, mazePtr->settings.baseDistance);
 
                 mazePtr->addToMaze(newPoint, MazeElementsTypes::corridor);
 
@@ -27,11 +27,11 @@ void MazeGenerator::generateCorridors(const Point &from) {
     }
 }
 
-void MazeGenerator::bridgeTheGap(const Point &oldPoint, const Point &currentDirection, int length) {
-    Point bridgeGapPoint{oldPoint};
+void MazeGenerator::bridgeTheGap(const Point &from, const Point &direction, int length) {
+    Point bridgeGapPoint{from};
 
     for (int i{0}; i < length; ++i) {
-        bridgeGapPoint += currentDirection;
+        bridgeGapPoint += direction;
 
         mazePtr->addToMaze(bridgeGapPoint, MazeElementsTypes::corridor);
 
@@ -39,7 +39,7 @@ void MazeGenerator::bridgeTheGap(const Point &oldPoint, const Point &currentDire
     }
 }
 
-void MazeGenerator::generate(Maze *_mazePtr, const Point &start) {
+void MazeGenerator::generate(std::shared_ptr<Maze> &_mazePtr, const Point &start) {
     mazePtr = _mazePtr;
 
     generateRooms();
@@ -47,7 +47,7 @@ void MazeGenerator::generate(Maze *_mazePtr, const Point &start) {
     findPossibleEntrances();
     drawRoomEntrances();
 
-    mazePtr = nullptr;
+    mazePtr.reset();
 }
 
 void MazeGenerator::generateRooms() {
@@ -122,7 +122,7 @@ void MazeGenerator::findPossibleEntrances() {
                 Point startPoint{room.roomPoints.topLeft.x + i, room.roomPoints.topLeft.y};
 
                 Point toCheck = startPoint;
-                for (int length{1}; length < mazePtr->settings.gap * 2; ++length) {
+                for (int length{1}; length < mazePtr->settings.baseDistance * 2; ++length) {
                     toCheck = toCheck + direction;
                     if (mazePtr->inMazeBoundaries(toCheck) && mazePtr->getMazePointRef(toCheck)->isInMaze()) {
                         room.addPossibleEntrance(startPoint, Directions::NORTH, length);
@@ -139,7 +139,7 @@ void MazeGenerator::findPossibleEntrances() {
                 Point startPoint{room.roomPoints.bottomLeft.x + i, room.roomPoints.bottomLeft.y};
 
                 Point toCheck = startPoint;
-                for (int length{1}; length < mazePtr->settings.gap * 2; ++length) {
+                for (int length{1}; length < mazePtr->settings.baseDistance * 2; ++length) {
                     toCheck = toCheck + direction;
                     if (mazePtr->inMazeBoundaries(toCheck) && mazePtr->getMazePointRef(toCheck)->isInMaze()) {
                         room.addPossibleEntrance(startPoint, Directions::SOUTH, length);
@@ -156,7 +156,7 @@ void MazeGenerator::findPossibleEntrances() {
                 Point startPoint{room.roomPoints.topLeft.x, room.roomPoints.topLeft.y + i};
 
                 Point toCheck = startPoint;
-                for (int length{1}; length < mazePtr->settings.gap * 2; ++length) {
+                for (int length{1}; length < mazePtr->settings.baseDistance * 2; ++length) {
                     toCheck = toCheck + direction;
                     if (mazePtr->inMazeBoundaries(toCheck) && mazePtr->getMazePointRef(toCheck)->isInMaze()) {
                         room.addPossibleEntrance(startPoint, Directions::WEST, length);
@@ -173,7 +173,7 @@ void MazeGenerator::findPossibleEntrances() {
                 Point startPoint{room.roomPoints.topRight.x, room.roomPoints.topRight.y + i};
 
                 Point toCheck = startPoint;
-                for (int length{1}; length < mazePtr->settings.gap * 2; ++length) {
+                for (int length{1}; length < mazePtr->settings.baseDistance * 2; ++length) {
                     toCheck = toCheck + direction;
                     if (mazePtr->inMazeBoundaries(toCheck) && mazePtr->getMazePointRef(toCheck)->isInMaze()) {
                         room.addPossibleEntrance(startPoint, Directions::EAST, length);

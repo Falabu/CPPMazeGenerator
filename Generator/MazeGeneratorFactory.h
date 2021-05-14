@@ -6,12 +6,13 @@
 #define MAZEGENERATOR_MAZEGENERATORFACTORY_H
 
 #include "MazeGenerator.h"
+#include <memory>
 
 class MazeGeneratorFactory {
 public:
-    static MazeGenerator* create(MazeDrawer &drawer);
+    static std::unique_ptr<MazeGenerator> create(MazeDrawer &drawer);
 
-    static MazeGenerator* create(MazeDrawer &drawer, std::string seed);
+    static std::unique_ptr<MazeGenerator> create(MazeDrawer &drawer, std::string seed);
 };
 
 

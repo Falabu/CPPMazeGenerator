@@ -4,9 +4,9 @@
 #include "Generator/MazeGeneratorFactory.h"
 
 int main(int argc, char *argv[]) {
-    int w{300};
-    int h{100};
-    int g{2};
+    int w{50};
+    int h{50};
+    int g{3};
     std::string seed;
     if (argc >= 4) {
         std::istringstream w_in(argv[1]);
@@ -33,9 +33,8 @@ int main(int argc, char *argv[]) {
     myTypes::MazeSettings settings{w, h, g};
 
     NcursesDisplay display;
-    Maze myMaze(settings);
-    Maze *mazePtr = &myMaze;
-    MazeGenerator *mgPtr{nullptr};
+    std::shared_ptr<Maze> mazePtr = std::make_shared<Maze>(settings);
+    std::unique_ptr<MazeGenerator> mgPtr;
 
     if (argc >= 5) {
         seed = argv[4];
@@ -53,9 +52,6 @@ int main(int argc, char *argv[]) {
     display.read();
 
     display.deInit();
-
-    delete mazePtr;
-    delete mgPtr;
 
     return 0;
 }

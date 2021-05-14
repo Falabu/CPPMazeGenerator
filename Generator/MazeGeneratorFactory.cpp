@@ -4,18 +4,14 @@
 
 #include "MazeGeneratorFactory.h"
 
-MazeGenerator *MazeGeneratorFactory::create(MazeDrawer &drawer) {
-    MazeGenerator *mgPtr{nullptr};
+std::unique_ptr<MazeGenerator> MazeGeneratorFactory::create(MazeDrawer &drawer) {
     Randomizer randomizer{};
 
-    mgPtr = new MazeGenerator(drawer, randomizer);
-    return mgPtr;
+    return std::make_unique<MazeGenerator>(drawer, randomizer);
 }
 
-MazeGenerator *MazeGeneratorFactory::create(MazeDrawer &drawer, std::string seed) {
-    MazeGenerator *mgPtr{nullptr};
+std::unique_ptr<MazeGenerator> MazeGeneratorFactory::create(MazeDrawer &drawer, std::string seed) {
     Randomizer randomizer{seed};
 
-    mgPtr = new MazeGenerator(drawer, randomizer);
-    return mgPtr;
+    return std::make_unique<MazeGenerator>(drawer, randomizer);
 }

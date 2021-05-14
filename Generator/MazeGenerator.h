@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <ncurses.h>
 #include <unistd.h>
+#include <memory>
 #include "../Shared/myTypes.h"
 #include "../Shared/Point.h"
 #include "../Shared/Directions.h"
@@ -18,12 +19,12 @@ class MazeGenerator {
 public:
     explicit MazeGenerator(MazeDrawer &drawer, Randomizer &randomizer);
 
-    void generate(Maze *_mazePtr, const Point &start = {0, 0});
+    void generate(std::shared_ptr<Maze> &_mazePtr, const Point &start = {0, 0});
 
     std::string getSeed();
 
 private:
-    Maze *mazePtr{nullptr};
+    std::shared_ptr<Maze> mazePtr;
 
     MazeDrawer &drawer;
 
@@ -37,7 +38,7 @@ private:
 
     bool roomIntersect(const Room &room);
 
-    void bridgeTheGap(const Point &oldPoint, const Point &currentDirection, int length);
+    void bridgeTheGap(const Point &from, const Point &direction, int length);
 
     static bool valueInRange(int value, int min, int max);
 
