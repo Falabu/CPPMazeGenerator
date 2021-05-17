@@ -7,18 +7,18 @@ Maze::Maze(myTypes::MazeSettings _settings) {
 }
 
 void Maze::addToMaze(Point &point, MazeElementsTypes type) {
-    MazeElement *mazePoint = getMazePointRef(point);
+    MazeElement *mazePoint = getMazeElementRef(point);
 
     mazePoint->setCoordinate(point);
     mazePoint->set(type);
 }
 
-MazeElement *Maze::getMazePointRef(const Point &point) {
+MazeElement *Maze::getMazeElementRef(const Point &point) {
     return &maze[point.y][point.x];
 }
 
 bool Maze::mazePointVisited(Point &point) {
-    MazeElement *mazePoint = getMazePointRef(point);
+    MazeElement *mazePoint = getMazeElementRef(point);
 
     return mazePoint->isInMaze();
 }
@@ -51,7 +51,7 @@ bool Maze::visitedInAnyDirection(const Point &point) {
         Point pointToCheck = point + p;
 
         if (inMazeBoundaries(pointToCheck)) {
-            MazeElement *mazePoint = getMazePointRef(pointToCheck);
+            MazeElement *mazePoint = getMazeElementRef(pointToCheck);
 
             return mazePoint->isInMaze();
         }

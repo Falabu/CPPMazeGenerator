@@ -11,7 +11,7 @@
 
 class Randomizer {
 private:
-    std::mt19937 generator{};
+    std::mt19937 generator;
 
     RandomNumberGenerator numberGenerator;
 public:
@@ -20,8 +20,6 @@ public:
     explicit Randomizer(std::string &_seed);
 
     std::string getSeed();
-
-    void setGenerator(const RandomNumberGenerator &_generator);
 
     int randomInRange(int from, int to);
 

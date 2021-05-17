@@ -23,7 +23,7 @@ public:
 
     void addToMaze(Point &point, MazeElementsTypes type);
 
-    MazeElement *getMazePointRef(const Point &point);
+    MazeElement *getMazeElementRef(const Point &point);
 
     bool mazePointVisited(Point &point);
 

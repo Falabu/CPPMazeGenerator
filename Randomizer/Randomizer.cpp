@@ -36,10 +36,6 @@ std::string Randomizer::getSeed() {
     return numberGenerator.seedToString();
 }
 
-void Randomizer::setGenerator(const RandomNumberGenerator &_generator) {
-    numberGenerator = _generator;
-}
-
 template void Randomizer::shuffleVector<Point>(std::vector<Point> &toShuffle);
 
 template void Randomizer::shuffleVector<RoomEntrance>(std::vector<RoomEntrance> &toShuffle);

@@ -23,7 +23,17 @@ void MazeElement::set(MazeElementsTypes _type) {
     type = _type;
 }
 
+
+void MazeElement::unSet() {
+    inMaze = false;
+    type = MazeElementsTypes::empty;
+}
+
+
 MazeElementsTypes MazeElement::getType() const {
     return type;
 }
 
+Point MazeElement::getCoordinate() {
+    return coordinate;
+}

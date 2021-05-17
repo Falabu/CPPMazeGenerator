@@ -18,9 +18,13 @@ public:
 
     bool isInMaze() const;
 
+    Point getCoordinate();
+
     void setCoordinate(const Point &point);
 
     void set(MazeElementsTypes _type);
+
+    void unSet();
 
     MazeElementsTypes getType() const;
 

@@ -6,6 +6,7 @@
 #include <ncurses.h>
 #include <unistd.h>
 #include <memory>
+#include <functional>
 #include "../Shared/myTypes.h"
 #include "../Shared/Point.h"
 #include "../Shared/Directions.h"
@@ -46,12 +47,14 @@ private:
 
     void findPossibleEntrances();
 
-    template<typename T>
-    std::vector<RoomEntrance> findRoomEntrances(int lengthIn, const Point &direction, T &&lambda);
+    std::vector<RoomEntrance>
+    findRoomEntrances(int lengthIn, const Point &direction, const std::function<Point(int)> &lambda);
 
     void drawRoomEntrances();
 
-    void shrinkDeadEnds();
+    void findDeadEnds();
+
+    void DeleteDeadEnds(Point &from);
 };
 
 

@@ -47,6 +47,7 @@ void MazeGenerator::generate(std::shared_ptr<Maze> &_mazePtr, const Point &start
     generateCorridors(start);
     findPossibleEntrances();
     drawRoomEntrances();
+    findDeadEnds();
 
     mazePtr.reset();
 }
@@ -137,8 +138,8 @@ void MazeGenerator::findPossibleEntrances() {
     }
 }
 
-template<typename T>
-std::vector<RoomEntrance> MazeGenerator::findRoomEntrances(int lengthIn, const Point &direction, T &&lambda) {
+std::vector<RoomEntrance>
+MazeGenerator::findRoomEntrances(int lengthIn, const Point &direction, const std::function<Point(int)> &lambda) {
     std::vector<RoomEntrance> entrances;
 
     for (int i{0}; i <= lengthIn; ++i) {
@@ -149,7 +150,7 @@ std::vector<RoomEntrance> MazeGenerator::findRoomEntrances(int lengthIn, const P
             Point toCheck = startPoint;
             for (int length{1}; length < mazePtr->settings.baseDistance * 2; ++length) {
                 toCheck = toCheck + direction;
-                if (mazePtr->inMazeBoundaries(toCheck) && mazePtr->getMazePointRef(toCheck)->isInMaze()) {
+                if (mazePtr->inMazeBoundaries(toCheck) && mazePtr->getMazeElementRef(toCheck)->isInMaze()) {
                     entrances.push_back({startPoint, direction, length});
                     break;
                 }
@@ -177,11 +178,36 @@ void MazeGenerator::drawRoomEntrances() {
     }
 }
 
-void MazeGenerator::shrinkDeadEnds() {
-    for (auto y : mazePtr->maze) {
-        for (auto x : mazePtr->maze) {
-
+void MazeGenerator::findDeadEnds() {
+    for (auto &y : mazePtr->maze) {
+        for (auto &x : y) {
+            if (x.isInMaze()) {
+                Point currentPoint = x.getCoordinate();
+                DeleteDeadEnds(currentPoint);
+            }
         }
     }
 }
 
+void MazeGenerator::DeleteDeadEnds(Point &from) {
+    int count{0};
+    Point nextPoint;
+    MazeElement *currentElement = mazePtr->getMazeElementRef(from);
+    MazeElement *nextElement = {nullptr};
+
+    for (const auto &direction: Directions::ordinalDirections) {
+        Point newPoint = from + direction;
+        nextElement = mazePtr->getMazeElementRef(newPoint);
+
+        if (mazePtr->inMazeBoundaries(newPoint) && nextElement->isInMaze()) {
+            ++count;
+            nextPoint = newPoint;
+        }
+    }
+
+    if (count == 1) {
+        currentElement->unSet();
+        drawer.draw(mazePtr->maze, 5000);
+        DeleteDeadEnds(nextPoint);
+    }
+}
