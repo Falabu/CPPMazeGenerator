@@ -17,20 +17,19 @@ namespace myTypes {
         int height{};
         int baseDistance{};
 
-        int roomMinDistance{6};
+        Point start{0, 0};
+
+        int roomMinDistance{10};
         int maxRooms{1000};
 
-        int roomsMinWidth{8};
-        int roomsMaxWidth{8};
+        int roomsMinWidth{12};
+        int roomsMaxWidth{12};
 
-        int roomsMinHeight{4};
-        int roomsMaxHeight{4};
+        int roomsMinHeight{6};
+        int roomsMaxHeight{6};
 
         int maxRoomEntrances{2};
         int minRoomEntrances{1};
-
-        int deadEndMaxPercent{100};
-        int deadEndMinPercent{0};
 
         Speed speed{5000, 2500};
     };

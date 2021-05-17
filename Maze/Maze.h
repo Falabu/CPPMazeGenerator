@@ -2,7 +2,7 @@
 // Created by dawe on 2021. 05. 14..
 //
 
-#ifndef MAZEGENERATOR_MAZE_H
+#ifndef MAZEGENERATOR_MAZEnullptr_H
 #define MAZEGENERATOR_MAZE_H
 
 #include <algorithm>

@@ -20,7 +20,7 @@ class MazeGenerator {
 public:
     explicit MazeGenerator(MazeDrawer &drawer, Randomizer &randomizer);
 
-    void generate(std::shared_ptr<Maze> &_mazePtr, const Point &start = {0, 0});
+    void generate(std::shared_ptr<Maze> &_mazePtr);
 
     std::string getSeed();
 

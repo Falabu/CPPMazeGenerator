@@ -40,11 +40,11 @@ void MazeGenerator::bridgeTheGap(const Point &from, const Point &direction, int 
     }
 }
 
-void MazeGenerator::generate(std::shared_ptr<Maze> &_mazePtr, const Point &start) {
+void MazeGenerator::generate(std::shared_ptr<Maze> &_mazePtr) {
     mazePtr = _mazePtr;
 
     generateRooms();
-    generateCorridors(start);
+    generateCorridors(mazePtr->settings.start);
     findPossibleEntrances();
     drawRoomEntrances();
     findDeadEnds();
