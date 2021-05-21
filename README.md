@@ -1,6 +1,6 @@
 ## C++ MazeGenerator
 
-####Disclaimer:
+#### Disclaimer:
 **This is my first time trying writing C++ program it could contain badly written c++ code** 
 
 This work under linux it's uses ncurses library to show the generated maze.
