@@ -12,7 +12,7 @@ NumberGenerator::NumberGenerator(const std::string &seedString) {
     std::srand(generateSeed(seedNumberList));
 }
 
-std::vector<int> NumberGenerator::generateSeedNumberList() const {
+std::vector<int> NumberGenerator::generateSeedNumberList() {
     std::random_device rd;
     std::uniform_int_distribution<> randomInt(1, 9);
     std::mt19937 gen(rd());
@@ -21,6 +21,8 @@ std::vector<int> NumberGenerator::generateSeedNumberList() const {
     for (int i{0}; i < seedLength; ++i) {
         int random = randomInt(gen);
         tempSeedList.push_back(random);
+
+        seed.append(std::to_string(random));
     }
 
     return tempSeedList;
@@ -28,6 +30,7 @@ std::vector<int> NumberGenerator::generateSeedNumberList() const {
 
 std::vector<int> NumberGenerator::generateSeedNumberList(const std::string &seedString) {
     std::vector<int> tempSeedList;
+    seed = seedString;
 
     for (char const &c: seedString) {
         if (c != ' ') {
@@ -67,11 +70,5 @@ unsigned long int NumberGenerator::operator()() {
 }
 
 std::string NumberGenerator::getSeed() {
-    std::string seedString;
-
-    for (const auto &item : seedNumberList) {
-        seedString.append(std::to_string(item));
-    }
-
-    return seedString;
+    return seed;
 }

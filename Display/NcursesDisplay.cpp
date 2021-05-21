@@ -27,3 +27,7 @@ void NcursesDisplay::read() {
 MazeDrawer &NcursesDisplay::getMazeDrawer() {
     return drawer;
 }
+
+void NcursesDisplay::writeLine(std::string toWrite) {
+    printw(toWrite.c_str());
+}

@@ -23,7 +23,6 @@ int main(int argc, char *argv[]) {
     }
 
     NcursesDisplay display;
-    std::unique_ptr<MazeGenerator> mgPtr;
     std::shared_ptr<Randomizer> randPtr;
     if (argc >= 4) {
         seed = argv[3];
@@ -35,14 +34,15 @@ int main(int argc, char *argv[]) {
     SettingsGenerator setting{randPtr, w, h};
     auto mazePtr = std::make_shared<myMaze::Maze>(setting.getSetting());
 
-    mgPtr = std::make_unique<MazeGenerator>(randPtr);
+    MazeGenerator mGenerator(randPtr);
 
     display.init();
 
-    mgPtr->generate(mazePtr);
+    mGenerator.generate(mazePtr);
 
-    display.getMazeDrawer().draw(mazePtr->maze, 1000);
-    printw(randPtr->getSeed().c_str());
+    display.getMazeDrawer().draw(mazePtr->maze);
+
+    display.writeLine("Your seed is: " + randPtr->getSeed());
 
     display.read();
 

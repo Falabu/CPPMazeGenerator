@@ -21,9 +21,11 @@ private:
 
     int seedLength{25};
 
+    std::string seed;
+
     std::vector<int> generateSeedNumberList(const std::string &seedString);
 
-    std::vector<int> generateSeedNumberList() const;
+    std::vector<int> generateSeedNumberList();
 
     static unsigned int generateSeed(const std::vector<int> &vector);
 };

@@ -11,7 +11,7 @@
 
 class NcursesMazeDrawer : public MazeDrawer {
 public:
-    void draw(const myMaze::MazeElements &mazeToDraw, int second) override;
+    void draw(const myMaze::MazeElements &mazeToDraw) override;
 };
 
 

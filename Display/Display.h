@@ -13,6 +13,8 @@ public:
 
     virtual void read() = 0;
 
+    virtual void writeLine(std::string toWrite) = 0;
+
     virtual MazeDrawer &getMazeDrawer() = 0;
 };
 

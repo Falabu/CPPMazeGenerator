@@ -4,9 +4,7 @@
 
 #include "NcursesMazeDrawer.h"
 
-void NcursesMazeDrawer::draw(const myMaze::MazeElements &mazeToDraw, int second) {
-    erase();
-
+void NcursesMazeDrawer::draw(const myMaze::MazeElements &mazeToDraw) {
     for (const auto &y: mazeToDraw) {
         for (const auto &x: y) {
             if (x.isInMaze()) {
@@ -37,5 +35,4 @@ void NcursesMazeDrawer::draw(const myMaze::MazeElements &mazeToDraw, int second)
     }
 
     refresh();
-    usleep(second);
 }

@@ -17,6 +17,8 @@ public:
 
     void read() override;
 
+    void writeLine(std::string toWrite) override;
+
     MazeDrawer &getMazeDrawer() override;
 };
 
