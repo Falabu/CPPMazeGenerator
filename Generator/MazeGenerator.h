@@ -26,24 +26,22 @@ private:
 
     void checkStartPoint();
 
-    void generateCorridors(const myMath::Point &from);
+    void digCorridors(const myMath::Point &from);
 
     void generateRooms();
 
-    void generateRoom(myMaze::Room &room);
-
-    void bridgeTheGap(const myMath::Point &from, const myMath::Point &direction, int length);
+    void digRoom(myMaze::Room &room);
 
     void findPossibleEntrances();
 
     std::vector<myMaze::RoomEntrance>
-    findRoomEntrances(int lengthIn, const myMath::Point &direction, const std::function<myMath::Point(int)> &lambda);
+    findRoomSideEntrances(int lengthIn, const myMath::Point &direction,const std::function<myMath::Point(int)> &lambda);
 
-    void drawRoomEntrances();
+    void digRoomEntrances();
 
-    void findDeadEnds();
+    void digTheGap(const myMath::Point &from, const myMath::Point &direction, int length);
 
-    void DeleteDeadEnds(myMath::Point &from);
+    void deleteDeadEnds(myMath::Point &from);
 };
 
 

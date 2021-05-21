@@ -33,6 +33,8 @@ namespace myMaze {
         bool inMazeBoundaries(const std::vector<myMath::Point> &points) const;
 
         bool roomIntersect(const Room &room);
+
+        void mapMazePoints(const std::function<void(myMath::Point)> &lambda);
     };
 
 }

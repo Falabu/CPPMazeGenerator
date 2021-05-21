@@ -4,7 +4,7 @@
 
 MazeGenerator::MazeGenerator(std::shared_ptr<Randomizer> rand) : rand(std::move(rand)) {}
 
-void MazeGenerator::generateCorridors(const myMath::Point &from) {
+void MazeGenerator::digCorridors(const myMath::Point &from) {
     auto directions = myMaze::Directions::ordinalDirections;
     rand->shuffleVector(directions);
 
@@ -18,17 +18,17 @@ void MazeGenerator::generateCorridors(const myMath::Point &from) {
         if (mazePtr->inMazeBoundaries(newPoint)) {
             if (!mazePtr->mazeElementVisited(newPoint) && !mazePtr->visitedInAnyDirection(newPoint)) {
 
-                bridgeTheGap(from, selectedDirection, mazePtr->settings.corridorDistance);
+                digTheGap(from, selectedDirection, mazePtr->settings.corridorDistance);
 
                 mazePtr->setMazeElement(newPoint, myMaze::MazeElementsTypes::corridor);
 
-                generateCorridors(newPoint);
+                digCorridors(newPoint);
             }
         }
     }
 }
 
-void MazeGenerator::bridgeTheGap(const myMath::Point &from, const myMath::Point &direction, int length) {
+void MazeGenerator::digTheGap(const myMath::Point &from, const myMath::Point &direction, int length) {
     myMath::Point bridgeGapPoint{from};
 
     for (int i{0}; i < length; ++i) {
@@ -43,10 +43,13 @@ void MazeGenerator::generate(std::shared_ptr<myMaze::Maze> &_mazePtr) {
 
     generateRooms();
     checkStartPoint();
-    generateCorridors(mazePtr->settings.start);
+    digCorridors(mazePtr->settings.start);
     findPossibleEntrances();
-    drawRoomEntrances();
-    findDeadEnds();
+    digRoomEntrances();
+
+    mazePtr->mapMazePoints([this](myMath::Point point) {
+        deleteDeadEnds(point);
+    });
 
     mazePtr.reset();
 }
@@ -67,12 +70,12 @@ void MazeGenerator::generateRooms() {
         myMaze::Room currentRoom{whereTo, currentWidth, currentHeight};
 
         if (mazePtr->inMazeBoundaries(currentRoom.position.getBoundaries()) && !mazePtr->roomIntersect(currentRoom)) {
-            generateRoom(currentRoom);
+            digRoom(currentRoom);
         }
     }
 }
 
-void MazeGenerator::generateRoom(myMaze::Room &room) {
+void MazeGenerator::digRoom(myMaze::Room &room) {
     for (int y{0}; y <= room.position.height; ++y) {
         for (int x{0}; x <= room.position.width; ++x) {
             myMath::Point newPoint = {room.position.coordinate.x + x, room.position.coordinate.y + y};
@@ -88,19 +91,19 @@ void MazeGenerator::findPossibleEntrances() {
 
     for (auto &room : mazePtr->rooms) {
 
-        auto topEntrances = findRoomEntrances(room.position.width, myMaze::Directions::north, [&room](int i) {
+        auto topEntrances = findRoomSideEntrances(room.position.width, myMaze::Directions::north, [&room](int i) {
             return myMath::Point{room.position.topLeft().x + i, room.position.topLeft().y};
         });
 
-        auto bottomEntrances = findRoomEntrances(room.position.width, myMaze::Directions::south, [&room](int i) {
+        auto bottomEntrances = findRoomSideEntrances(room.position.width, myMaze::Directions::south, [&room](int i) {
             return myMath::Point{room.position.bottomLeft().x + i, room.position.bottomLeft().y};
         });
 
-        auto leftEntrances = findRoomEntrances(room.position.height, myMaze::Directions::west, [&room](int i) {
+        auto leftEntrances = findRoomSideEntrances(room.position.height, myMaze::Directions::west, [&room](int i) {
             return myMath::Point{room.position.topLeft().x, room.position.topLeft().y + i};
         });
 
-        auto rightEntrances = findRoomEntrances(room.position.height, myMaze::Directions::east, [&room](int i) {
+        auto rightEntrances = findRoomSideEntrances(room.position.height, myMaze::Directions::east, [&room](int i) {
             return myMath::Point{room.position.topRight().x, room.position.topRight().y + i};
         });
 
@@ -112,8 +115,8 @@ void MazeGenerator::findPossibleEntrances() {
 }
 
 std::vector<myMaze::RoomEntrance>
-MazeGenerator::findRoomEntrances(int lengthIn, const myMath::Point &direction,
-                                 const std::function<myMath::Point(int)> &lambda) {
+MazeGenerator::findRoomSideEntrances(int lengthIn, const myMath::Point &direction,
+                                     const std::function<myMath::Point(int)> &lambda) {
     std::vector<myMaze::RoomEntrance> entrances;
 
     for (int i{0}; i <= lengthIn; ++i) {
@@ -135,7 +138,7 @@ MazeGenerator::findRoomEntrances(int lengthIn, const myMath::Point &direction,
     return entrances;
 }
 
-void MazeGenerator::drawRoomEntrances() {
+void MazeGenerator::digRoomEntrances() {
     for (auto &room: mazePtr->rooms) {
         std::vector<int> roomSides{myMaze::RoomSides::top, myMaze::RoomSides::right, myMaze::RoomSides::bottom,
                                    myMaze::RoomSides::left};
@@ -151,7 +154,7 @@ void MazeGenerator::drawRoomEntrances() {
                     rand->shuffleVector(sideEntrances);
 
                     myMaze::RoomEntrance selectedEntrance = sideEntrances.front();
-                    bridgeTheGap(selectedEntrance.coordinate, selectedEntrance.direction, selectedEntrance.length - 1);
+                    digTheGap(selectedEntrance.coordinate, selectedEntrance.direction, selectedEntrance.length - 1);
 
                     entrancesDrawn++;
                 }
@@ -160,18 +163,7 @@ void MazeGenerator::drawRoomEntrances() {
     }
 }
 
-void MazeGenerator::findDeadEnds() {
-    for (auto &y : mazePtr->maze) {
-        for (auto &x : y) {
-            if (x.isInMaze()) {
-                myMath::Point currentPoint = x.getCoordinate();
-                DeleteDeadEnds(currentPoint);
-            }
-        }
-    }
-}
-
-void MazeGenerator::DeleteDeadEnds(myMath::Point &from) {
+void MazeGenerator::deleteDeadEnds(myMath::Point &from) {
     int count{0};
     myMath::Point nextPoint;
     myMaze::MazeElement *currentElement = mazePtr->getMazeElementRef(from);
@@ -189,7 +181,7 @@ void MazeGenerator::DeleteDeadEnds(myMath::Point &from) {
 
     if (count == 1) {
         currentElement->unSet();
-        DeleteDeadEnds(nextPoint);
+        deleteDeadEnds(nextPoint);
     }
 }
 

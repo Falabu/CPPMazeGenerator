@@ -58,3 +58,14 @@ bool myMaze::Maze::roomIntersect(const Room &room) {
                            return myMath::Math::rectOverlap(room.position, r.position, settings.roomMinDistance);
                        });
 }
+
+void myMaze::Maze::mapMazePoints(const std::function<void(myMath::Point)> &lambda) {
+    for (auto &y : maze) {
+        for (auto &x : y) {
+            if (x.isInMaze()) {
+                myMath::Point currentPoint = x.getCoordinate();
+                lambda(currentPoint);
+            }
+        }
+    }
+}
