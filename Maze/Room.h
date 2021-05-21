@@ -1,49 +1,41 @@
-//
-// Created by dawe on 2021. 05. 13..
-//
-
 #ifndef UNTITLED_ROOM_H
 #define UNTITLED_ROOM_H
 
-#include "../Shared/Point.h"
+#include "../Math/Math.h"
+
 #include <vector>
+#include "unordered_map"
 
-struct RoomPoints {
-    Point topLeft;
-    Point topRight;
-    Point bottomRight;
-    Point bottomLeft;
-};
+namespace myMaze {
 
-struct RoomEntrance {
-    Point coordinate;
-    Point direction;
-    int length;
-};
+    struct RoomEntrance {
+        myMath::Point coordinate;
+        myMath::Point direction;
+        int length;
+    };
 
-class Room {
-public:
-    Point coordinate;
-    RoomPoints roomPoints;
-    int width;
+    enum RoomSides {
+        top = 0,
+        right = 1,
+        bottom = 2,
+        left = 4
+    };
 
-    int height;
+    typedef std::unordered_map<int, std::vector<RoomEntrance>> RoomEntrances;
 
-    Room(Point &point, int width, int height);
+    class Room {
+    public:
+        myMath::Rect position;
 
-    void addPossibleEntrance(const Point &point, const Point &direction, int length);
+        Room(const myMath::Point &point, int width, int height);
 
-    void addPossibleEntrance(std::vector<RoomEntrance> entrances);
+        void addPossibleEntrance(int side, const std::vector<RoomEntrance> &entrances);
 
-    std::vector<RoomEntrance> getPossibleEntrance();
+        std::vector<RoomEntrance> getPossibleEntrance(int side);
 
-    std::vector<Point> getBoundaries() const;
+    private:
+        RoomEntrances possibleEntrances;
+    };
+}
 
-    int possibleEntrances{0};
-private:
-
-    std::vector<RoomEntrance> possibleRoomEntrances;
-};
-
-
-#endif //UNTITLED_ROOM_H
+#endif

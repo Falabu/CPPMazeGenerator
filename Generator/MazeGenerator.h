@@ -3,58 +3,47 @@
 
 #include <random>
 #include <algorithm>
-#include <ncurses.h>
 #include <unistd.h>
 #include <memory>
 #include <functional>
-#include "../Shared/myTypes.h"
-#include "../Shared/Point.h"
-#include "../Shared/Directions.h"
+#include "../Math/Point.h"
+#include "../Maze/Directions.h"
 #include "../Maze/Maze.h"
-#include "../Randomizer/Randomizer.h"
-#include "../Display/MazeDrawer/MazeDrawer.h"
 #include "../Maze/Room.h"
-#include "../Randomizer/RandomNumberGenerator.h"
+#include "../Maze/Types.h"
+#include "../Randomizer/Randomizer.h"
 
 class MazeGenerator {
 public:
-    explicit MazeGenerator(MazeDrawer &drawer, Randomizer &randomizer);
+    void generate(std::shared_ptr<myMaze::Maze> &_mazePtr);
 
-    void generate(std::shared_ptr<Maze> &_mazePtr);
-
-    std::string getSeed();
+    explicit MazeGenerator(std::shared_ptr<Randomizer> rand);
 
 private:
-    std::shared_ptr<Maze> mazePtr;
+    std::shared_ptr<myMaze::Maze> mazePtr;
 
-    MazeDrawer &drawer;
+    std::shared_ptr<Randomizer> rand;
 
-    Randomizer randomizer;
+    void checkStartPoint();
 
-    void generateCorridors(const Point &from);
+    void generateCorridors(const myMath::Point &from);
 
     void generateRooms();
 
-    void generateRoom(Room &room);
+    void generateRoom(myMaze::Room &room);
 
-    bool roomIntersect(const Room &room);
-
-    void bridgeTheGap(const Point &from, const Point &direction, int length);
-
-    static bool valueInRange(int value, int min, int max);
-
-    bool rectOverlap(const Room &A, const Room &B) const;
+    void bridgeTheGap(const myMath::Point &from, const myMath::Point &direction, int length);
 
     void findPossibleEntrances();
 
-    std::vector<RoomEntrance>
-    findRoomEntrances(int lengthIn, const Point &direction, const std::function<Point(int)> &lambda);
+    std::vector<myMaze::RoomEntrance>
+    findRoomEntrances(int lengthIn, const myMath::Point &direction, const std::function<myMath::Point(int)> &lambda);
 
     void drawRoomEntrances();
 
     void findDeadEnds();
 
-    void DeleteDeadEnds(Point &from);
+    void DeleteDeadEnds(myMath::Point &from);
 };
 
 

@@ -1,26 +1,26 @@
 #include <functional>
+#include <utility>
 #include "MazeGenerator.h"
 
-MazeGenerator::MazeGenerator(MazeDrawer &drawer, Randomizer &randomizer) : drawer(drawer), randomizer(randomizer) {
-}
+MazeGenerator::MazeGenerator(std::shared_ptr<Randomizer> rand) : rand(std::move(rand)) {}
 
-void MazeGenerator::generateCorridors(const Point &from) {
-    auto directions = Directions::ordinalDirections;
-    randomizer.shuffleVector(directions);
+void MazeGenerator::generateCorridors(const myMath::Point &from) {
+    auto directions = myMaze::Directions::ordinalDirections;
+    rand->shuffleVector(directions);
 
     while (!directions.empty()) {
         auto selectedDirection{directions.back()};
         directions.pop_back();
 
-        Point newPoint{from.x + selectedDirection.x * mazePtr->settings.baseDistance,
-                       from.y + selectedDirection.y * mazePtr->settings.baseDistance};
+        myMath::Point newPoint{from.x + selectedDirection.x * mazePtr->settings.corridorDistance,
+                               from.y + selectedDirection.y * mazePtr->settings.corridorDistance};
 
         if (mazePtr->inMazeBoundaries(newPoint)) {
-            if (!mazePtr->mazePointVisited(newPoint) && !mazePtr->visitedInAnyDirection(newPoint)) {
+            if (!mazePtr->mazeElementVisited(newPoint) && !mazePtr->visitedInAnyDirection(newPoint)) {
 
-                bridgeTheGap(from, selectedDirection, mazePtr->settings.baseDistance);
+                bridgeTheGap(from, selectedDirection, mazePtr->settings.corridorDistance);
 
-                mazePtr->addToMaze(newPoint, MazeElementsTypes::corridor);
+                mazePtr->setMazeElement(newPoint, myMaze::MazeElementsTypes::corridor);
 
                 generateCorridors(newPoint);
             }
@@ -28,22 +28,21 @@ void MazeGenerator::generateCorridors(const Point &from) {
     }
 }
 
-void MazeGenerator::bridgeTheGap(const Point &from, const Point &direction, int length) {
-    Point bridgeGapPoint{from};
+void MazeGenerator::bridgeTheGap(const myMath::Point &from, const myMath::Point &direction, int length) {
+    myMath::Point bridgeGapPoint{from};
 
     for (int i{0}; i < length; ++i) {
         bridgeGapPoint += direction;
 
-        mazePtr->addToMaze(bridgeGapPoint, MazeElementsTypes::corridor);
-
-        drawer.draw(mazePtr->maze, mazePtr->settings.speed.corridor);
+        mazePtr->setMazeElement(bridgeGapPoint, myMaze::MazeElementsTypes::corridor);
     }
 }
 
-void MazeGenerator::generate(std::shared_ptr<Maze> &_mazePtr) {
+void MazeGenerator::generate(std::shared_ptr<myMaze::Maze> &_mazePtr) {
     mazePtr = _mazePtr;
 
     generateRooms();
+    checkStartPoint();
     generateCorridors(mazePtr->settings.start);
     findPossibleEntrances();
     drawRoomEntrances();
@@ -54,101 +53,76 @@ void MazeGenerator::generate(std::shared_ptr<Maze> &_mazePtr) {
 
 void MazeGenerator::generateRooms() {
     for (int i{1}; i <= mazePtr->settings.maxRooms; ++i) {
-        int currentWidth = randomizer.randomInRange(mazePtr->settings.roomsMinWidth, mazePtr->settings.roomsMaxWidth);
-        int currentHeight = randomizer.randomInRange(mazePtr->settings.roomsMinHeight,
-                                                     mazePtr->settings.roomsMaxHeight);
+        int currentWidth = rand->randomInRange(mazePtr->settings.roomsMinWidth,
+                                               mazePtr->settings.roomsMaxWidth);
+        int currentHeight = rand->randomInRange(mazePtr->settings.roomsMinHeight,
+                                                mazePtr->settings.roomsMaxHeight);
 
-        Point whereTo = randomizer.randomPoint(mazePtr->maze);
-        Room currentRoom{whereTo, currentWidth, currentHeight};
+        currentWidth += rand->randomInRange(mazePtr->settings.minRoomSizeVariance,
+                                            mazePtr->settings.maxRoomSizeVariance);
+        currentHeight += rand->randomInRange(mazePtr->settings.minRoomSizeVariance,
+                                             mazePtr->settings.maxRoomSizeVariance);
 
-        if (mazePtr->inMazeBoundaries(currentRoom.getBoundaries()) && !roomIntersect(currentRoom)) {
+        myMath::Point whereTo = rand->randomPoint(mazePtr->maze);
+        myMaze::Room currentRoom{whereTo, currentWidth, currentHeight};
+
+        if (mazePtr->inMazeBoundaries(currentRoom.position.getBoundaries()) && !mazePtr->roomIntersect(currentRoom)) {
             generateRoom(currentRoom);
         }
     }
 }
 
-bool MazeGenerator::roomIntersect(const Room &room) {
+void MazeGenerator::generateRoom(myMaze::Room &room) {
+    for (int y{0}; y <= room.position.height; ++y) {
+        for (int x{0}; x <= room.position.width; ++x) {
+            myMath::Point newPoint = {room.position.coordinate.x + x, room.position.coordinate.y + y};
 
-    return std::any_of(mazePtr->rooms.begin(), mazePtr->rooms.end(), [&](Room &r) { return rectOverlap(room, r); });
-}
-
-void MazeGenerator::generateRoom(Room &room) {
-    for (int y{0}; y <= room.height; ++y) {
-        for (int x{0}; x <= room.width; ++x) {
-            Point newPoint = {room.coordinate.x + x, room.coordinate.y + y};
-
-            mazePtr->addToMaze(newPoint, MazeElementsTypes::room);
-
-            drawer.draw(mazePtr->maze, mazePtr->settings.speed.rooms);
+            mazePtr->setMazeElement(newPoint, myMaze::MazeElementsTypes::room);
         }
     }
 
     mazePtr->rooms.push_back(room);
 }
 
-/**
- * https://stackoverflow.com/a/306379
- */
-bool MazeGenerator::valueInRange(int value, int min, int max) {
-    return (value >= min) && (value <= max);
-}
-
-bool MazeGenerator::rectOverlap(const Room &A, const Room &B) const {
-    bool xOverlap =
-            valueInRange(A.coordinate.x, B.coordinate.x,
-                         B.coordinate.x + B.width + mazePtr->settings.roomMinDistance) ||
-            valueInRange(B.coordinate.x, A.coordinate.x, A.coordinate.x + A.width + mazePtr->settings.roomMinDistance);
-
-    bool yOverlap =
-            valueInRange(A.coordinate.y, B.coordinate.y,
-                         B.coordinate.y + B.height + mazePtr->settings.roomMinDistance) ||
-            valueInRange(B.coordinate.y, A.coordinate.y, A.coordinate.y + A.height + mazePtr->settings.roomMinDistance);
-
-    return xOverlap && yOverlap;
-}
-
-std::string MazeGenerator::getSeed() {
-    return randomizer.getSeed();
-}
-
 void MazeGenerator::findPossibleEntrances() {
 
     for (auto &room : mazePtr->rooms) {
 
-        auto topEntrances = findRoomEntrances(room.width, Directions::NORTH, [&room](int i) {
-            return Point{room.roomPoints.topLeft.x + i, room.roomPoints.topLeft.y};
+        auto topEntrances = findRoomEntrances(room.position.width, myMaze::Directions::north, [&room](int i) {
+            return myMath::Point{room.position.topLeft().x + i, room.position.topLeft().y};
         });
 
-        auto bottomEntrances = findRoomEntrances(room.width, Directions::SOUTH, [&room](int i) {
-            return Point{room.roomPoints.bottomLeft.x + i, room.roomPoints.bottomLeft.y};
+        auto bottomEntrances = findRoomEntrances(room.position.width, myMaze::Directions::south, [&room](int i) {
+            return myMath::Point{room.position.bottomLeft().x + i, room.position.bottomLeft().y};
         });
 
-        auto leftEntrances = findRoomEntrances(room.height, Directions::WEST, [&room](int i) {
-            return Point{room.roomPoints.topLeft.x, room.roomPoints.topLeft.y + i};
+        auto leftEntrances = findRoomEntrances(room.position.height, myMaze::Directions::west, [&room](int i) {
+            return myMath::Point{room.position.topLeft().x, room.position.topLeft().y + i};
         });
 
-        auto rightEntrances = findRoomEntrances(room.height, Directions::EAST, [&room](int i) {
-            return Point{room.roomPoints.topRight.x, room.roomPoints.topRight.y + i};
+        auto rightEntrances = findRoomEntrances(room.position.height, myMaze::Directions::east, [&room](int i) {
+            return myMath::Point{room.position.topRight().x, room.position.topRight().y + i};
         });
 
-        room.addPossibleEntrance(topEntrances);
-        room.addPossibleEntrance(bottomEntrances);
-        room.addPossibleEntrance(rightEntrances);
-        room.addPossibleEntrance(leftEntrances);
+        room.addPossibleEntrance(myMaze::RoomSides::top, topEntrances);
+        room.addPossibleEntrance(myMaze::RoomSides::bottom, bottomEntrances);
+        room.addPossibleEntrance(myMaze::RoomSides::right, rightEntrances);
+        room.addPossibleEntrance(myMaze::RoomSides::left, leftEntrances);
     }
 }
 
-std::vector<RoomEntrance>
-MazeGenerator::findRoomEntrances(int lengthIn, const Point &direction, const std::function<Point(int)> &lambda) {
-    std::vector<RoomEntrance> entrances;
+std::vector<myMaze::RoomEntrance>
+MazeGenerator::findRoomEntrances(int lengthIn, const myMath::Point &direction,
+                                 const std::function<myMath::Point(int)> &lambda) {
+    std::vector<myMaze::RoomEntrance> entrances;
 
     for (int i{0}; i <= lengthIn; ++i) {
         if (i > 0 && i < lengthIn) {
 
-            Point startPoint = lambda(i);
+            myMath::Point startPoint = lambda(i);
 
-            Point toCheck = startPoint;
-            for (int length{1}; length < mazePtr->settings.baseDistance * 2; ++length) {
+            myMath::Point toCheck = startPoint;
+            for (int length{1}; length < mazePtr->settings.corridorDistance * 2; ++length) {
                 toCheck = toCheck + direction;
                 if (mazePtr->inMazeBoundaries(toCheck) && mazePtr->getMazeElementRef(toCheck)->isInMaze()) {
                     entrances.push_back({startPoint, direction, length});
@@ -163,16 +137,24 @@ MazeGenerator::findRoomEntrances(int lengthIn, const Point &direction, const std
 
 void MazeGenerator::drawRoomEntrances() {
     for (auto &room: mazePtr->rooms) {
-        std::vector<RoomEntrance> entrances{room.getPossibleEntrance()};
-        randomizer.shuffleVector(entrances);
-        int maxEntrances = randomizer.randomInRange(mazePtr->settings.minRoomEntrances,
-                                                    mazePtr->settings.maxRoomEntrances);
+        std::vector<int> roomSides{myMaze::RoomSides::top, myMaze::RoomSides::right, myMaze::RoomSides::bottom,
+                                   myMaze::RoomSides::left};
+        rand->shuffleVector(roomSides);
 
-        if (entrances.size() >= maxEntrances) {
-            for (int i{1}; i <= maxEntrances; ++i) {
-                int randomEntrance = randomizer.randomInRange(0, room.possibleEntrances - 1);
-                bridgeTheGap(entrances[randomEntrance].coordinate, entrances[randomEntrance].direction,
-                             entrances[randomEntrance].length - 1);
+        int entrancesDrawn = 0;
+        int neededEntranceCount = rand->randomInRange(mazePtr->settings.minRoomEntrances,
+                                                      mazePtr->settings.maxRoomEntrances);
+        for (const auto &side : roomSides) {
+            if (entrancesDrawn < neededEntranceCount) {
+                std::vector<myMaze::RoomEntrance> sideEntrances = room.getPossibleEntrance(side);
+                if (!sideEntrances.empty()) {
+                    rand->shuffleVector(sideEntrances);
+
+                    myMaze::RoomEntrance selectedEntrance = sideEntrances.front();
+                    bridgeTheGap(selectedEntrance.coordinate, selectedEntrance.direction, selectedEntrance.length - 1);
+
+                    entrancesDrawn++;
+                }
             }
         }
     }
@@ -182,21 +164,21 @@ void MazeGenerator::findDeadEnds() {
     for (auto &y : mazePtr->maze) {
         for (auto &x : y) {
             if (x.isInMaze()) {
-                Point currentPoint = x.getCoordinate();
+                myMath::Point currentPoint = x.getCoordinate();
                 DeleteDeadEnds(currentPoint);
             }
         }
     }
 }
 
-void MazeGenerator::DeleteDeadEnds(Point &from) {
+void MazeGenerator::DeleteDeadEnds(myMath::Point &from) {
     int count{0};
-    Point nextPoint;
-    MazeElement *currentElement = mazePtr->getMazeElementRef(from);
-    MazeElement *nextElement = {nullptr};
+    myMath::Point nextPoint;
+    myMaze::MazeElement *currentElement = mazePtr->getMazeElementRef(from);
+    myMaze::MazeElement *nextElement{nullptr};
 
-    for (const auto &direction: Directions::ordinalDirections) {
-        Point newPoint = from + direction;
+    for (const auto &direction: myMaze::Directions::ordinalDirections) {
+        myMath::Point newPoint = from + direction;
         nextElement = mazePtr->getMazeElementRef(newPoint);
 
         if (mazePtr->inMazeBoundaries(newPoint) && nextElement->isInMaze()) {
@@ -207,7 +189,15 @@ void MazeGenerator::DeleteDeadEnds(Point &from) {
 
     if (count == 1) {
         currentElement->unSet();
-        drawer.draw(mazePtr->maze, 5000);
         DeleteDeadEnds(nextPoint);
     }
+}
+
+void MazeGenerator::checkStartPoint() {
+    myMath::Point currentStart = mazePtr->settings.start;
+    while (mazePtr->getMazeElementRef(currentStart)->isInMaze()) {
+        currentStart = rand->randomPoint(mazePtr->maze);
+    }
+
+    mazePtr->settings.start = currentStart;
 }

@@ -1,16 +1,17 @@
 #include "Randomizer.h"
 
 Randomizer::Randomizer() {
-    numberGenerator = RandomNumberGenerator();
+    numberGenerator = NumberGenerator();
 }
 
 Randomizer::Randomizer(std::string &_seed) {
-    numberGenerator = RandomNumberGenerator{_seed};
+    numberGenerator = NumberGenerator{_seed};
 }
 
 int Randomizer::randomInRange(int from, int to) {
     std::uniform_int_distribution<int> random(from, to);
-    generator.seed(numberGenerator());
+    auto seed = numberGenerator();
+    generator.seed(seed);
 
     return random(generator);
 }
@@ -22,9 +23,9 @@ void Randomizer::shuffleVector(std::vector<T> &toShuffle) {
     std::shuffle(toShuffle.begin(), toShuffle.end(), generator);
 }
 
-Point Randomizer::randomPoint(const myTypes::Maze &maze) {
-    size_t mazeHeight = maze.size();
-    size_t mazeWidth = maze[0].size();
+myMath::Point Randomizer::randomPoint(const myMaze::MazeElements &maze) {
+    std::size_t mazeHeight = maze.size();
+    std::size_t mazeWidth = maze[0].size();
 
     int randomY = randomInRange(0, static_cast<int>(mazeHeight));
     int randomX = randomInRange(0, static_cast<int>(mazeWidth));
@@ -33,9 +34,11 @@ Point Randomizer::randomPoint(const myTypes::Maze &maze) {
 }
 
 std::string Randomizer::getSeed() {
-    return numberGenerator.seedToString();
+    return numberGenerator.getSeed();
 }
 
-template void Randomizer::shuffleVector<Point>(std::vector<Point> &toShuffle);
+template void Randomizer::shuffleVector<myMath::Point>(std::vector<myMath::Point> &toShuffle);
 
-template void Randomizer::shuffleVector<RoomEntrance>(std::vector<RoomEntrance> &toShuffle);
+template void Randomizer::shuffleVector<int>(std::vector<int> &toShuffle);
+
+template void Randomizer::shuffleVector<myMaze::RoomEntrance>(std::vector<myMaze::RoomEntrance> &toShuffle);

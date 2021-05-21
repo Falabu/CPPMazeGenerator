@@ -4,16 +4,17 @@
 #include <algorithm>
 #include <random>
 #include <vector>
-#include "../Shared/Point.h"
-#include "../Shared/myTypes.h"
-#include "RandomNumberGenerator.h"
+#include <cassert>
+#include "../Math/Point.h"
+#include "NumberGenerator.h"
 #include "../Maze/Room.h"
+#include "../Maze/Types.h"
 
 class Randomizer {
 private:
     std::mt19937 generator;
 
-    RandomNumberGenerator numberGenerator;
+    NumberGenerator numberGenerator;
 public:
     Randomizer();
 
@@ -23,7 +24,7 @@ public:
 
     int randomInRange(int from, int to);
 
-    Point randomPoint(const myTypes::Maze &maze);
+    myMath::Point randomPoint(const myMaze::MazeElements &maze);
 
     template<class T>
     void shuffleVector(std::vector<T> &toShuffle);

@@ -1,37 +1,39 @@
 #ifndef MAZEPOINT_H
 #define MAZEPOINT_H
 
-#include "../Shared/Point.h"
-#include "ncurses.h"
+#include "../Math/Math.h"
 
-enum MazeElementsTypes {
-    empty = 0,
-    corridor = 1,
-    room = 2
-};
+namespace myMaze {
 
-class MazeElement {
-public:
-    MazeElement();
+    enum MazeElementsTypes {
+        empty = 0,
+        corridor = 1,
+        room = 2
+    };
 
-    explicit MazeElement(const Point &point);
+    class MazeElement {
+    public:
+        MazeElement();
 
-    bool isInMaze() const;
+        explicit MazeElement(const myMath::Point &point);
 
-    Point getCoordinate();
+        bool isInMaze() const;
 
-    void setCoordinate(const Point &point);
+        myMath::Point getCoordinate();
 
-    void set(MazeElementsTypes _type);
+        void setCoordinate(const myMath::Point &point);
 
-    void unSet();
+        void set(MazeElementsTypes _type);
 
-    MazeElementsTypes getType() const;
+        void unSet();
 
-private:
-    MazeElementsTypes type;
-    Point coordinate;
-    bool inMaze{false};
-};
+        MazeElementsTypes getType() const;
+
+    private:
+        MazeElementsTypes type;
+        myMath::Point coordinate;
+        bool inMaze{false};
+    };
+}
 
 #endif

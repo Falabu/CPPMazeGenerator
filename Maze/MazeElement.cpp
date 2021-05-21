@@ -1,39 +1,37 @@
 #include "MazeElement.h"
 
-MazeElement::MazeElement() {
+myMaze::MazeElement::MazeElement() {
     coordinate = {0, 0};
     type = MazeElementsTypes::empty;
 }
 
-MazeElement::MazeElement(const Point &point) {
+myMaze::MazeElement::MazeElement(const myMath::Point &point) {
     coordinate = point;
     type = MazeElementsTypes::empty;
 }
 
-bool MazeElement::isInMaze() const {
+bool myMaze::MazeElement::isInMaze() const {
     return inMaze;
 }
 
-void MazeElement::setCoordinate(const Point &point) {
+void myMaze::MazeElement::setCoordinate(const myMath::Point &point) {
     coordinate = point;
 }
 
-void MazeElement::set(MazeElementsTypes _type) {
+void myMaze::MazeElement::set(MazeElementsTypes _type) {
     inMaze = true;
     type = _type;
 }
 
-
-void MazeElement::unSet() {
+void myMaze::MazeElement::unSet() {
     inMaze = false;
     type = MazeElementsTypes::empty;
 }
 
-
-MazeElementsTypes MazeElement::getType() const {
+myMaze::MazeElementsTypes myMaze::MazeElement::getType() const {
     return type;
 }
 
-Point MazeElement::getCoordinate() {
+myMath::Point myMaze::MazeElement::getCoordinate() {
     return coordinate;
 }

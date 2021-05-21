@@ -1,38 +1,41 @@
-//
-// Created by dawe on 2021. 05. 14..
-//
-
 #ifndef MAZEGENERATOR_MAZEnullptr_H
 #define MAZEGENERATOR_MAZE_H
 
 #include <algorithm>
-#include "../Shared/myTypes.h"
+#include <memory>
 #include "Room.h"
-#include "../Shared/Directions.h"
+#include "MazeElement.h"
+#include "Types.h"
+#include "Directions.h"
+#include "../Math/Math.h"
 
-class Maze {
-public:
+namespace myMaze {
+    class Maze {
+    public:
+        Settings settings;
 
-    myTypes::MazeSettings settings;
+        MazeElements maze; // make private
 
-    myTypes::Maze maze; // make private
+        Rooms rooms; // make private
 
-    std::vector<Room> rooms; // make private
+        explicit Maze(myMaze::Settings settings);
 
-    explicit Maze(myTypes::MazeSettings _settings);
+        void setMazeElement(myMath::Point &point, MazeElementsTypes type);
 
-    void addToMaze(Point &point, MazeElementsTypes type);
+        MazeElement *getMazeElementRef(const myMath::Point &point);
 
-    MazeElement *getMazeElementRef(const Point &point);
+        bool mazeElementVisited(myMath::Point &point);
 
-    bool mazePointVisited(Point &point);
+        bool visitedInAnyDirection(const myMath::Point &point);
 
-    bool visitedInAnyDirection(const Point &point);
+        bool inMazeBoundaries(const myMath::Point &point) const;
 
-    bool inMazeBoundaries(const Point &point) const;
+        bool inMazeBoundaries(const std::vector<myMath::Point> &points) const;
 
-    bool inMazeBoundaries(const std::vector<Point> &points) const;
-};
+        bool roomIntersect(const Room &room);
+    };
+
+}
 
 
-#endif //MAZEGENERATOR_MAZE_H
+#endif

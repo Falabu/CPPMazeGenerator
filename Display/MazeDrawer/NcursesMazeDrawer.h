@@ -7,10 +7,11 @@
 
 #include <unistd.h>
 #include "MazeDrawer.h"
+#include "ncurses.h"
 
 class NcursesMazeDrawer : public MazeDrawer {
 public:
-    void draw(const myTypes::Maze &mazeToDraw, int second) override;
+    void draw(const myMaze::MazeElements &mazeToDraw, int second) override;
 };
 
 
