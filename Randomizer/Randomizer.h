@@ -18,7 +18,7 @@ private:
 public:
     Randomizer();
 
-    explicit Randomizer(std::string &_seed);
+    explicit Randomizer(std::string &&_seed);
 
     std::string getSeed();
 

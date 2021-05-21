@@ -4,7 +4,7 @@ Randomizer::Randomizer() {
     numberGenerator = NumberGenerator();
 }
 
-Randomizer::Randomizer(std::string &_seed) {
+Randomizer::Randomizer(std::string &&_seed) {
     numberGenerator = NumberGenerator{_seed};
 }
 
