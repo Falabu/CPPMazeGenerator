@@ -5,7 +5,10 @@ Args::Args(int number, char *args[]) :
         args(args),
         width(50),
         height(50),
-        _haveSeed(false) {}
+        _haveSeed(false) {
+
+    parseArgs();
+}
 
 void Args::parseArgs() {
     if (number >= 3) {
@@ -21,7 +24,9 @@ void Args::parseArgs() {
         if (h_in >> val_h) {
             height = val_h;
         }
-    } else if (number >= 4) {
+    }
+
+    if (number >= 4) {
         seed = args[3];
         _haveSeed = true;
     }
