@@ -7,7 +7,7 @@
 #include "MazeElement.h"
 #include "Types.h"
 #include "Directions.h"
-#include "../Math/Math.hpp"
+#include "Math.hpp"
 
 namespace myMaze {
     class Maze {

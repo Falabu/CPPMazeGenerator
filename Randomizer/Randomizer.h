@@ -5,7 +5,7 @@
 #include <random>
 #include <vector>
 #include <cassert>
-#include "../Maze/Types.h"
+#include "Types.h"
 
 class Randomizer {
 public:

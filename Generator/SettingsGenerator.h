@@ -2,8 +2,8 @@
 #define MAZEGENERATOR_SETTINGSGENERATOR_H
 
 #include <memory>
-#include "../Maze/Types.h"
-#include "../Randomizer/Randomizer.h"
+#include "Types.h"
+#include "Randomizer.h"
 
 enum MazeSizes {
     small = 2500,

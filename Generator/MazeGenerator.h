@@ -6,12 +6,12 @@
 #include <unistd.h>
 #include <memory>
 #include <functional>
-#include "../Math/Point.hpp"
-#include "../Maze/Directions.h"
-#include "../Maze/Maze.h"
-#include "../Maze/Room.h"
-#include "../Maze/Types.h"
-#include "../Randomizer/Randomizer.h"
+#include "Point.hpp"
+#include "Directions.h"
+#include "Maze.h"
+#include "Room.h"
+#include "Types.h"
+#include "Randomizer.h"
 
 class MazeGenerator {
 public:

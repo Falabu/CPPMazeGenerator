@@ -1,7 +1,7 @@
 #ifndef DIRECTIONS_H
 #define DIRECTIONS_H
 
-#include "../Math/Point.hpp"
+#include "Point.hpp"
 #include <array>
 
 namespace myMaze::Directions {

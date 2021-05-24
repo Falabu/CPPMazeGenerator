@@ -1,7 +1,7 @@
 #ifndef MAZEPOINT_H
 #define MAZEPOINT_H
 
-#include "../Math/Math.hpp"
+#include "Math.hpp"
 
 namespace myMaze {
 

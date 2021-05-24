@@ -1,7 +1,7 @@
 #ifndef UNTITLED_ROOM_H
 #define UNTITLED_ROOM_H
 
-#include "../Math/Math.hpp"
+#include "Math.hpp"
 
 #include <vector>
 #include "unordered_map"

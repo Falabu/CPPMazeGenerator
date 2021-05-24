@@ -1,4 +1,4 @@
-#include "Args/Args.h"
+#include "Args.h"
 #include "Generator/MazeGenerator.h"
 #include "Display/NcursesDisplay.h"
 #include "Generator/SettingsGenerator.h"

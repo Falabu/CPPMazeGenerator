@@ -1,7 +1,7 @@
 #ifndef UNTITLED_MAZEDRAWER_H
 #define UNTITLED_MAZEDRAWER_H
 
-#include "../../Maze/Types.h"
+#include "Types.h"
 
 class MazeDrawer {
 public:
