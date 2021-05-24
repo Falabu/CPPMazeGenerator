@@ -25,7 +25,7 @@ enum RoomDensity {
 
 class SettingsGenerator {
 public:
-    SettingsGenerator(const std::shared_ptr<Randomizer> &rand, int width, int height);
+    SettingsGenerator(Randomizer &rand, int width, int height);
 
     myMaze::Settings getSetting();
 
@@ -33,7 +33,7 @@ private:
     myMaze::Settings settings;
     int area{};
     MazeSizes mazeSize{};
-    std::shared_ptr<Randomizer> rand;
+    Randomizer &rand;
 
     void calculateMazeSize();
 

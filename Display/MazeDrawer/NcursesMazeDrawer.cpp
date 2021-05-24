@@ -4,7 +4,7 @@
 
 #include "NcursesMazeDrawer.h"
 
-void NcursesMazeDrawer::draw(const myMaze::MazeElements &mazeToDraw) {
+void NcursesMazeDrawer::draw(const myMaze::MazeStructure &mazeToDraw) {
     for (const auto &y: mazeToDraw) {
         for (const auto &x: y) {
             if (x.isInMaze()) {

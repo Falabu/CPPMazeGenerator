@@ -5,16 +5,9 @@
 #include <random>
 #include <vector>
 #include <cassert>
-#include "../Math/Point.h"
-#include "NumberGenerator.h"
-#include "../Maze/Room.h"
 #include "../Maze/Types.h"
 
 class Randomizer {
-private:
-    std::mt19937 generator;
-
-    NumberGenerator numberGenerator;
 public:
     Randomizer();
 
@@ -24,11 +17,26 @@ public:
 
     int randomInRange(int from, int to);
 
-    myMath::Point randomPoint(const myMaze::MazeElements &maze);
+    MazeMath::Point randomPoint(const myMaze::MazeStructure &maze);
 
-    template<class T>
+    template<typename T>
     void shuffleVector(std::vector<T> &toShuffle);
+
+private:
+    std::mt19937 generator;
+
+    std::vector<int> seedNumberList;
+
+    int seedLength{25};
+
+    std::string seed;
+
+    std::vector<int> generateSeedNumberList(const std::string &seedString);
+
+    std::vector<int> generateSeedNumberList();
+
+    static unsigned int generateSeed(const std::vector<int> &vector);
 };
 
 
-#endif //RANDOMIZE_H
+#endif

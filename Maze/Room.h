@@ -1,7 +1,7 @@
 #ifndef UNTITLED_ROOM_H
 #define UNTITLED_ROOM_H
 
-#include "../Math/Math.h"
+#include "../Math/Math.hpp"
 
 #include <vector>
 #include "unordered_map"
@@ -9,8 +9,8 @@
 namespace myMaze {
 
     struct RoomEntrance {
-        myMath::Point coordinate;
-        myMath::Point direction;
+        MazeMath::Point coordinate;
+        MazeMath::Point direction;
         int length;
     };
 
@@ -25,11 +25,11 @@ namespace myMaze {
 
     class Room {
     public:
-        myMath::Rect position;
+        MazeMath::Rect position;
 
-        Room(const myMath::Point &point, int width, int height);
+        Room(const MazeMath::Point &point, int width, int height);
 
-        void addPossibleEntrance(int side, const std::vector<RoomEntrance> &entrances);
+        void addPossibleEntrance(myMaze::RoomSides side, const std::vector<RoomEntrance> &entrances);
 
         std::vector<RoomEntrance> getPossibleEntrance(int side);
 

@@ -5,7 +5,7 @@ myMaze::MazeElement::MazeElement() {
     type = MazeElementsTypes::empty;
 }
 
-myMaze::MazeElement::MazeElement(const myMath::Point &point) {
+myMaze::MazeElement::MazeElement(const MazeMath::Point &point) {
     coordinate = point;
     type = MazeElementsTypes::empty;
 }
@@ -14,7 +14,7 @@ bool myMaze::MazeElement::isInMaze() const {
     return inMaze;
 }
 
-void myMaze::MazeElement::setCoordinate(const myMath::Point &point) {
+void myMaze::MazeElement::setCoordinate(const MazeMath::Point &point) {
     coordinate = point;
 }
 
@@ -32,6 +32,6 @@ myMaze::MazeElementsTypes myMaze::MazeElement::getType() const {
     return type;
 }
 
-myMath::Point myMaze::MazeElement::getCoordinate() {
+MazeMath::Point myMaze::MazeElement::getCoordinate() const {
     return coordinate;
 }

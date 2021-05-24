@@ -1,16 +1,16 @@
-#ifndef MAZEGENERATOR_MATH_H
-#define MAZEGENERATOR_MATH_H
+#ifndef MAZEGENERATOR_MATH_HPP
+#define MAZEGENERATOR_MATH_HPP
 
-#include "Point.h"
-#include "Rect.h"
+#include "Point.hpp"
+#include "Rect.hpp"
 
-namespace myMath {
+namespace MazeMath {
     /**
      * https://stackoverflow.com/a/306379
      */
     class Math {
     public:
-        inline static bool rectOverlap(const myMath::Rect &A, const myMath::Rect &B, int enlargeCheck = 0) {
+        inline static bool rectOverlap(const MazeMath::Rect &A, const MazeMath::Rect &B, int enlargeCheck = 0) {
             bool xOverlap =
                     valueInRange(A.topLeft().x,B.topLeft().x,B.topRight().x + enlargeCheck) ||
                     valueInRange(B.topLeft().x,A.topLeft().x,A.topRight().x + enlargeCheck);

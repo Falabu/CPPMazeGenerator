@@ -6,26 +6,25 @@
 int main(int argc, char *argv[]) {
     Args args{argc, argv};
     NcursesDisplay display;
-    std::shared_ptr<Randomizer> randPtr;
+    std::optional<Randomizer> randomizer;
 
     if (args.haveSeed()) {
-        randPtr = std::make_shared<Randomizer>(args.getSeed());
+        randomizer = Randomizer(args.getSeed());
     } else {
-        randPtr = std::make_shared<Randomizer>();
+        randomizer = Randomizer();
     }
 
-    SettingsGenerator setting{randPtr, args.getWidth(), args.getHeight()};
-    auto mazePtr = std::make_shared<myMaze::Maze>(setting.getSetting());
+    SettingsGenerator setting{randomizer.value(), args.getWidth(), args.getHeight()};
 
-    MazeGenerator mGenerator(randPtr);
+    MazeGenerator mGenerator(setting.getSetting(), randomizer.value());
 
     display.init();
 
-    mGenerator.generate(mazePtr);
+    auto maze = mGenerator.generate();
 
-    display.getMazeDrawer().draw(mazePtr->maze);
+    display.getMazeDrawer().draw(maze.getMazeStructure());
 
-    display.writeLine("Your seed is: " + randPtr->getSeed());
+    display.writeLine("Your seed is: " + randomizer->getSeed());
 
     display.read();
 

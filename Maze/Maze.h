@@ -7,34 +7,39 @@
 #include "MazeElement.h"
 #include "Types.h"
 #include "Directions.h"
-#include "../Math/Math.h"
+#include "../Math/Math.hpp"
 
 namespace myMaze {
     class Maze {
     public:
         Settings settings;
 
-        MazeElements maze; // make private
+        Rooms &getRooms();
 
-        Rooms rooms; // make private
+        MazeStructure &getMazeStructure();
 
-        explicit Maze(myMaze::Settings settings);
+        explicit Maze(myMaze::Settings &settings);
 
-        void setMazeElement(myMath::Point &point, MazeElementsTypes type);
+        void setMazeElement(MazeMath::Point &point, MazeElementsTypes type);
 
-        MazeElement *getMazeElementRef(const myMath::Point &point);
+        MazeElement &getMazeElement(const MazeMath::Point &point);
 
-        bool mazeElementVisited(myMath::Point &point);
+        bool mazeElementVisited(const MazeMath::Point &point);
 
-        bool visitedInAnyDirection(const myMath::Point &point);
+        bool visitedInAnyDirection(const MazeMath::Point &point);
 
-        bool inMazeBoundaries(const myMath::Point &point) const;
+        bool inMazeBoundaries(const MazeMath::Point &point) const;
 
-        bool inMazeBoundaries(const std::vector<myMath::Point> &points) const;
+        bool inMazeBoundaries(const std::vector<MazeMath::Point> &points) const;
 
         bool roomIntersect(const Room &room);
 
-        void mapMazePoints(const std::function<void(myMath::Point)> &lambda);
+        void mapStructure(const std::function<void(MazeMath::Point)> &lambda);
+
+    private:
+        Rooms rooms;
+
+        MazeStructure mazeStructure;
     };
 
 }

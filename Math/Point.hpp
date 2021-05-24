@@ -1,17 +1,18 @@
 #ifndef POINT_H
 #define POINT_H
 
-namespace myMath {
+namespace MazeMath {
 
     class Point {
     public:
-        int x, y;
+        int x = 0;
+        int y = 0;
 
-        Point() : x(0), y(0) {};
+        Point() = default;
 
-        Point(int x, int y) : x(x), y(y) {};
+        constexpr Point(int x, int y) : x(x), y(y) {};
 
-        Point(const Point &otherPoint) {
+        constexpr Point(const Point &otherPoint) {
             x = otherPoint.x;
             y = otherPoint.y;
         };

@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <memory>
 #include <functional>
-#include "../Math/Point.h"
+#include "../Math/Point.hpp"
 #include "../Maze/Directions.h"
 #include "../Maze/Maze.h"
 #include "../Maze/Room.h"
@@ -15,18 +15,18 @@
 
 class MazeGenerator {
 public:
-    void generate(std::shared_ptr<myMaze::Maze> &_mazePtr);
+    myMaze::Maze generate();
 
-    explicit MazeGenerator(std::shared_ptr<Randomizer> rand);
+    explicit MazeGenerator(myMaze::Settings &&settings, Randomizer &rand);
 
 private:
-    std::shared_ptr<myMaze::Maze> mazePtr;
+    myMaze::Maze myMaze;
 
-    std::shared_ptr<Randomizer> rand;
+    Randomizer &rand;
 
     void checkStartPoint();
 
-    void digCorridors(const myMath::Point &from);
+    void digCorridors(const MazeMath::Point &from);
 
     void generateRooms();
 
@@ -35,13 +35,14 @@ private:
     void findPossibleEntrances();
 
     std::vector<myMaze::RoomEntrance>
-    findRoomSideEntrances(int lengthIn, const myMath::Point &direction,const std::function<myMath::Point(int)> &lambda);
+    findRoomSideEntrances(int lengthIn, const MazeMath::Point &direction,
+                          const std::function<MazeMath::Point(int)> &lambda);
 
     void digRoomEntrances();
 
-    void digTheGap(const myMath::Point &from, const myMath::Point &direction, int length);
+    void digTheGap(const MazeMath::Point &from, const MazeMath::Point &direction, int length);
 
-    void deleteDeadEnds(myMath::Point &from);
+    void deleteDeadEnds(MazeMath::Point &from);
 };
 
 

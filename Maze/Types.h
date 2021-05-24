@@ -6,15 +6,15 @@
 #include "MazeElement.h"
 
 namespace myMaze {
-    typedef std::vector<std::vector<MazeElement>> MazeElements;
-    typedef std::vector<Room> Rooms;
+    using MazeStructure = std::vector<std::vector<MazeElement>>;
+    using Rooms = std::vector<Room>;
 
     struct Settings {
         int width{};
         int height{};
         int corridorDistance{};
 
-        myMath::Point start{0, 0};
+        MazeMath::Point start{0, 0};
 
         int roomMinDistance{10};
         int maxRooms{1000};

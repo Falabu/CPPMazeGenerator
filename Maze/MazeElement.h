@@ -1,7 +1,7 @@
 #ifndef MAZEPOINT_H
 #define MAZEPOINT_H
 
-#include "../Math/Math.h"
+#include "../Math/Math.hpp"
 
 namespace myMaze {
 
@@ -15,13 +15,13 @@ namespace myMaze {
     public:
         MazeElement();
 
-        explicit MazeElement(const myMath::Point &point);
+        explicit MazeElement(const MazeMath::Point &point);
 
         bool isInMaze() const;
 
-        myMath::Point getCoordinate();
+        MazeMath::Point getCoordinate() const;
 
-        void setCoordinate(const myMath::Point &point);
+        void setCoordinate(const MazeMath::Point &point);
 
         void set(MazeElementsTypes _type);
 
@@ -31,7 +31,7 @@ namespace myMaze {
 
     private:
         MazeElementsTypes type;
-        myMath::Point coordinate;
+        MazeMath::Point coordinate;
         bool inMaze{false};
     };
 }
